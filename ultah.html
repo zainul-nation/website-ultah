@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kejutan Spesial Untukmu ❤️</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #FFB6C1; --glow: rgba(255, 182, 193, 0.5); }
+        body { font-family: 'Outfit', sans-serif; background: radial-gradient(circle at top right, #fdf2f8, #eef2ff); min-height: 100vh; overflow-x: hidden; color: #4a4a4a; }
+        
+        .glass { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.5); box-shadow: 0 8px 32px rgba(0,0,0,0.05); }
+        .glow-behind { position: relative; }
+        .glow-behind::before { content: ""; position: absolute; inset: -5px; background: linear-gradient(45deg, #fbcfe8, #fda4af, #e9d5ff); filter: blur(20px); opacity: 0.4; border-radius: 2rem; z-index: -1; }
+        
+        .heart { position: fixed; top: -10%; z-index: 0; pointer-events: none; animation: fall linear forwards; opacity: 0.6; }
+        @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+        
+        .hidden-page { display: none; opacity: 0; transition: opacity 0.8s ease-in-out; }
+        .active-page { display: flex; opacity: 1; transition: opacity 0.8s ease-in-out; animation: fadeIn 1s ease-out; }
+        @keyframes fadeIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    </style>
+</head>
+<body class="flex items-center justify-center p-4">
+
+    <!-- Audio Element (Persisten di luar page containers) -->
+    <audio id="bg-music" loop preload="auto">
+    <source src="musik.mp3" type="audio/mpeg">
+</audio>
+
+    <!-- Music Control Button -->
+    <button id="music-btn" onclick="toggleMusic()" class="fixed bottom-6 right-6 z-50 glass p-3 rounded-full shadow-lg hover:scale-110 transition-transform">
+        <span id="music-icon">🎵</span>
+    </button>
+
+    <div id="heart-container" class="fixed inset-0 pointer-events-none overflow-hidden"></div>
+
+    <!-- 1. Clock/Landing Page -->
+    <div id="page-clock" class="active-page flex-col items-center justify-center text-center max-w-lg w-full">
+        <div class="glass p-8 md:p-12 rounded-[2rem] shadow-xl glow-behind">
+            <h1 class="text-2xl font-serif text-pink-500 mb-6 italic">Waktu Spesial Hari Ini</h1>
+            <div id="clock" class="text-5xl md:text-6xl font-bold text-gray-700 mb-8 tabular-nums tracking-tighter">00:00:00</div>
+            <button onclick="startExperience('page-ready')" class="px-8 py-4 bg-pink-400 hover:bg-pink-500 text-white rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg font-semibold">
+                Buka Kejutan
+            </button>
+        </div>
+    </div>
+
+    <!-- 2. Ready Page -->
+    <div id="page-ready" class="hidden-page flex-col items-center justify-center text-center max-w-lg w-full">
+        <div class="glass p-12 rounded-[2rem] shadow-xl glow-behind">
+            <div class="text-6xl mb-6 animate-pulse">✨</div>
+            <h2 class="text-3xl font-serif text-gray-800 mb-4">Siap untuk sesuatu yang manis?</h2>
+            <button onclick="showPage('page-wish')" class="px-8 py-4 bg-white/50 border border-white hover:bg-pink-100 transition-all rounded-full font-semibold text-gray-800">
+                Lanjut 💖
+            </button>
+        </div>
+    </div>
+
+    <!-- 3. Birthday Wish Page -->
+    <div id="page-wish" class="hidden-page flex-col items-center justify-center text-center max-w-lg w-full">
+        <div class="glass p-12 rounded-[2rem] shadow-xl glow-behind">
+            <h1 class="text-4xl md:text-5xl font-serif text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-rose-400 mb-6 italic">
+                Selamat Ulang Tahun yang ke-19 sayang! 🎉
+            </h1>
+            <p class="text-gray-600 mb-8 italic">Semoga hari ini menjadi awal dari tahun yang paling luar biasa.</p>
+            <button onclick="showPage('page-letter')" class="px-8 py-4 bg-pink-500 text-white rounded-full font-semibold hover:bg-pink-600 transition-all shadow-lg hover:scale-105">
+                Lanjut ke Surat 💌
+            </button>
+        </div>
+    </div>
+
+    <!-- 4. Love Letter Page -->
+    <div id="page-letter" class="hidden-page flex-col items-center justify-center p-4 max-w-2xl w-full">
+        <div class="glass p-8 md:p-12 rounded-[2rem] shadow-2xl w-full relative glow-behind">
+            <h1 class="text-2xl md:text-3xl font-serif text-pink-600 mb-6">Halo Sayang,</h1>
+            <div id="typing-text" class="text-lg md:text-xl text-gray-700 leading-relaxed mb-8"></div>
+            <a id="wa-btn" href="https://wa.me/6287857302179?text=Halo%20sayang,%20aku%20sudah%20membaca%20suratmu%20❤️" target="_blank" 
+               class="inline-flex items-center gap-2 px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-full shadow-lg transition-all hover:scale-105">
+                <span>💚</span> Balas di WhatsApp
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const message = `selamat ulang tahun adek sayang, semoga panjang umur dan sehat selalu dan semoga yang di cita-cita kan tercapai dan juga semoga nantik kalau sudah masuk kuliah di lancarkan semua nya, dan semoga di berikan ke suksesan dan menjadi orang yang membanggakan bagi keluarga di suatu saat nantik amiiiin. dan juga maaf yah sayang, kakak enggak bisa ngasih apa-apa cuman bisa ngucapin enggak seperti yang lain yang semua serbah ngasih pas ultah yang orang dia sayang.
+dan semangat terus yah sayang untuk hari-hari nya dan juga sama kakak walaupun kadang ada sedikit kegaduhan itu hal biasa karna pasti ada di setiap hubungan dan juga seperti yang adek bilang dan juga kakak intinya tidak boleh kalau mau tidur itu ada yang marah karna hal itu yang bisa menyebabkan tambahnya amarah karna tidak mengungkapkan isi hatinya dan maaf waktu itu kakak pernah bilang kalau kakak marah langsung mau matiin telvon tapi itu kakak enggak pernah bakal lakuin kok karna memang semarah marah nya kakak bakal tetap untuk berpikir untuk tidak marah banget, seandainya kakak kayak begitu ingatkan kakak saja yh omongan kakak biar kakak inget dan sabar. selamat ulang tahun yang sayang doa yang terbaik dh pkok nya buat orang satu ini amiiiin...`;
+        const audio = document.getElementById('bg-music');
+        audio.addEventListener('canplaythrough', () => {
+    console.log('Audio berhasil dimuat');
+});
+
+audio.addEventListener('error', () => {
+    console.log('Audio gagal dimuat');
+});
+
+        function toggleMusic() {
+
+    if (audio.paused) {
+
+        audio.play()
+        .then(() => {
+            document.getElementById('music-icon').innerText = '🔊';
+        })
+        .catch(err => {
+            console.log("Gagal memutar audio:", err);
+        });
+
+    } else {
+
+        audio.pause();
+        document.getElementById('music-icon').innerText = '🎵';
+
+    }
+}
+
+        function startExperience(pageId) {
+
+    audio.play()
+    .then(() => {
+        document.getElementById('music-icon').innerText = '🔊';
+    })
+    .catch(err => {
+        console.log("Gagal memutar audio:", err);
+    });
+
+    showPage(pageId);
+}
+
+        // Falling hearts
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = Math.random() * 3 + 3 + 's';
+            heart.style.fontSize = Math.random() * 10 + 10 + 'px';
+            document.getElementById('heart-container').appendChild(heart);
+            setTimeout(() => heart.remove(), 6000);
+        }
+        setInterval(createHeart, 400);
+
+        function showPage(pageId) {
+            document.querySelectorAll('.active-page, .hidden-page').forEach(p => p.className = 'hidden-page');
+            const page = document.getElementById(pageId);
+            page.className = 'active-page flex-col items-center justify-center p-4 w-full';
+            if(pageId === 'page-letter') startTyping();
+        }
+
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID', { hour12: false });
+        }
+
+        function startTyping() {
+            let i = 0;
+            const el = document.getElementById('typing-text');
+            el.innerHTML = "";
+            const interval = setInterval(() => {
+                el.innerHTML += message.charAt(i);
+                i++;
+                if (i >= message.length) clearInterval(interval);
+            }, 60);
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+</body>
+</html>
